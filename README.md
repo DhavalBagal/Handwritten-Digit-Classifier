@@ -2,6 +2,7 @@
 
 The project entails a web application which allows you to classify handwritten digits.
 
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for testing purposes.
@@ -27,6 +28,7 @@ You need to have the following packages installed on your device before running 
 	
 		http://localhost:8000/
 	
+
 ## Directory Structure and Breakdown
 
 **`Server.py`** - Server side script that interacts with the web application
@@ -48,6 +50,7 @@ You need to have the following packages installed on your device before running 
 **`NN-from-scratch-code/DigitRecognizer.py`** - DigitRecognizer class to classify the input
 
 **`NN-from-scratch-code/model.json`** - Model saved in JSON format
+
 
 ## Built with
 
