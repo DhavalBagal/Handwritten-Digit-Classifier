@@ -52,5 +52,7 @@ You need to have the following packages installed on your device before running 
 ## Built with
 
 **React** - Web framework for Web application
+
 **Flask** - Server Side Backend
+
 **Pytorch** - Building the CNN model
