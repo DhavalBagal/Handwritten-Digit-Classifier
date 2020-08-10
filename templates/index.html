@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html> 
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="../static/jquery.min.js"></script>
+        <script src="../static/babel.min.js"></script>
+        <script crossorigin src="../static/react.development.js"></script>
+        <script crossorigin src="../static/react-dom.development.js"></script>
+
+        <link rel="stylesheet" href="">
+
+        <style>
+            @font-face {
+                font-family: GoodTimes;
+                src: url(../static/good-times.ttf);
+            }
+
+            /* 200px - 400px [xs] */
+            @media only screen and (min-width: 200px) {
+                .heading-bar-container{height: 14vw;}
+                .heading-text{font-size: 3vw;}
+                #digit-container{top: 20vw; width: 50vw; height: 50vw; left:25vw;}
+                .results-container{top:72vw; width: 70vw; height: 15vw; left:15vw;}
+                .result-text{height: 6.5vw; top:0.5vw; font-size: 6.5vw;}
+            }
+
+            /* 400px - 600px [sm] */
+            @media only screen and (min-width: 400px) {
+                .heading-bar-container{height: 14vw;}
+                .heading-text{font-size: 3vw;}
+                #digit-container{top: 20vw; width: 50vw; height: 50vw; left:25vw;}
+                .results-container{top:72vw; width: 70vw; height: 15vw; left:15vw;}
+                .result-text{height: 6.5vw; top:0.5vw; font-size: 6.5vw;}
+            }
+
+            /* 600px - 768px [md] */
+            @media only screen and (min-width: 600px) {
+                .heading-bar-container{height: 12vw;}
+                .heading-text{font-size: 3vw;}
+                #digit-container{top: 18vw; width: 30vw; height: 30vw; left:35vw;}
+                .results-container{top:50vw; width: 50vw; height: 10vw; left:25vw;}
+                .result-text{height: 4vw; top:0.5vw; font-size: 4vw;}
+            }
+
+            /* 768px - 992px [lg] */
+            @media only screen and (min-width: 768px){
+                .heading-bar-container{height: 10vw;}
+                .heading-text{font-size: 2vw;}
+                #digit-container{top: 12vw; width: 30vw; height: 30vw; left:35vw;}
+                .results-container{top:44vw; width: 50vw; height: 10vw; left:25vw;}
+                .result-text{height: 4vw; top:0.5vw; font-size: 4vw;}
+            }
+
+            /* 992px - 1200px [xl] */
+            @media only screen and (min-width: 992px) {
+                .heading-bar-container{height: 8vw;}
+                heading-text{font-size: 2vw;}
+                #digit-container{top: 10vw; width: 20vw; height: 20vw; left:40vw;}
+                .results-container{top:32vw; width: 60vw; height: 10vw; left:20vw;}
+                .result-text{height: 4vw; top:0.5vw; font-size: 4vw;}
+            }
+
+            /* 1200px and above [xxl] */
+            @media only screen and (min-width: 1200px) {
+                .heading-bar-container{height: 8vw;}
+                .heading-text{font-size: 2vw;}
+                #digit-container{top: 10vw; width: 20vw; height: 20vw; left:40vw;}
+                .results-container{top:32vw; width: 60vw; height: 10vw; left:20vw;}
+                .result-text{height: 4vw; top:0.5vw; font-size: 4vw;}
+            }
+
+            .result-btn:hover{transform: scale(1.2);}
+
+            .result-btn:active{transform: scale(0.8);}
+        </style>
+
+    </head>
+
+    <body>
+        <div id="root"></div>
+
+        <script type="text/babel">
+            var vec;
+
+            class HeadingBar extends React.Component{
+                render() {
+                    const containerStyle = {
+                        width: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContents: "flex-start",
+                        position: "absolute",
+                        left: "0",
+                        top: "0"
+                    };
+
+                    const imgStyle = {
+                        height: "80%",
+                        width: "auto",
+                        marginLeft: "2vw"
+                    }
+
+                    const headingTestStyle = {
+                        fontFamily: "GoodTimes",
+                        marginTop: "auto",
+                        marginBottom: "auto",
+                        marginLeft: "3vw"
+                    }
+
+                    return (
+                        <div className="heading-bar-container" style={containerStyle}>
+                            <img src="../static/logo.png" style={imgStyle}/>
+                            <span style={headingTestStyle} className="heading-text">D I G I T - R E C O G N I Z E R</span>
+                        </div>
+                    )
+                }
+            }
+
+            class DigitContainer extends React.Component{
+
+                componentDidMount(){
+                    var rect, x1, y1, gridCellX, gridCellY, canvasElem, canvasCtx;
+                    vec = {}
+                    var containerSize = parseInt($("#digit-container").css("height").slice(0,-2));
+                    var cellSize = containerSize/28;
+                    var mouseDown = false;
+
+                    canvasElem = document.getElementById("digit-canvas");
+                    canvasCtx = canvasElem.getContext("2d");
+                    canvasElem.width = containerSize;
+                    canvasElem.height = containerSize;
+
+                    $("#digit-canvas").on("mousedown", function(e){mouseDown = true;});
+                    $("#digit-canvas").on("mouseup", function(e){mouseDown = false;});
+                    $("#digit-canvas").on("mousemove", function(e){
+                        if(mouseDown){
+                            rect = canvasElem.getBoundingClientRect();
+                            gridCellX = Math.floor( (e.clientX - rect.left)/cellSize );
+                            gridCellY = Math.floor( (e.clientY - rect.top)/cellSize );
+                            
+                            if (gridCellX<0) gridCellX=0
+                            if (gridCellY<0) gridCellY=0
+                            vec[gridCellX+" "+gridCellY] = true
+                            x1 = gridCellX * cellSize;
+                            y1 = gridCellY * cellSize;
+                            canvasCtx.fillRect(x1, y1, cellSize, cellSize);
+                        }
+                    });
+                }
+
+                render(){
+                    const containerStyle = {
+                        border: "2px solid black",
+                        position: "absolute"
+                    }
+                    const canvasStyle = {
+                        width: "100%",
+                        height: "100%",
+                        position: "absolute",
+                        left: "0",
+                        top: "0"
+                    }
+                    return(
+                        <div id="digit-container" style={containerStyle}>
+                            <canvas id="digit-canvas" style={canvasStyle}>
+                            </canvas>
+                        </div>
+                    )
+                }
+            }
+
+            class ResultsContainer extends React.Component{
+
+                componentDidMount(){
+                    $("#clear-btn").on("click", function(){
+                        vec = {}
+                        var canvasElem = document.getElementById("digit-canvas");
+                        var canvasCtx = canvasElem.getContext("2d");
+                        canvasCtx.clearRect(0,0,canvasElem.width, canvasElem.height);
+                        $(".result-text").text("Click on 'Run'")
+                    });
+
+                    $("#run-btn").on("click", function(){
+                            getDigit();
+                        })
+                }
+                
+                render(){
+                    const containerStyle = {
+                        position: "absolute",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContents: "flex-start",
+                    }
+
+                    const resultTextStyle ={
+                        width: "80%",
+                        position: "absolute",
+                        left: "10%",
+                        textAlign: "center",
+                        fontFamily: "Helvetica Neue",
+                        fontWeight: "350",
+                        color: "#28292B"
+                    }
+
+                    const clearBtnStyle = {
+                        borderRadius: "12px",
+                        width: "20%",
+                        height: "30%",
+                        position: "absolute",
+                        left: "27%",
+                        top: "70%",
+                        backgroundColor: "#F7062B",
+                        border: "None",
+                        color: "white",
+                        fontFamily: "Helvetica Neue",
+                        fontSize: "100%",
+                        boxShadow: "5px 5px 5px grey",
+                        userSelect: "None",
+                        outline: "None"
+                    }
+
+                    const runBtnStyle = {
+                        borderRadius: "12px",
+                        width: "20%",
+                        height: "30%",
+                        position: "absolute",
+                        left: "53%",
+                        top: "70%",
+                        backgroundColor: "#353CDB",
+                        border: "None",
+                        color: "white",
+                        fontFamily: "Helvetica Neue",
+                        fontSize: "100%",
+                        boxShadow: "5px 5px 5px grey",
+                        userSelect: "None",
+                        outline: "None"
+                    }
+
+                    return(
+                        <div className="results-container" style={containerStyle}>
+                            <span className="result-text" style={resultTextStyle}>Click on 'Run'</span>
+                            <button id="clear-btn" className="result-btn" style={clearBtnStyle}>CLEAR</button>
+                            <button id="run-btn" className="result-btn" style={runBtnStyle}>RUN</button>
+                        </div>
+                    )
+                }
+            }
+
+            class App extends React.Component{
+                render(){
+                    const appStyle = {
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContents: "flex-start",
+                        width: "100%",
+                        height: "100%"
+                    } 
+                    return(
+                        <div id="app" style={appStyle}>
+                            <HeadingBar />
+                            <DigitContainer />
+                            <ResultsContainer />
+                        </div>
+                    )
+                }
+            }
+            
+            function getDigit(){
+                var URL = "localhost:8000";
+                var URL_PATH = "http://"+URL+"/classify";
+                var list = [];
+                for(var key in vec){
+                    var coordinates = key.split(" ");
+                    list.push([ parseInt(coordinates[0]), parseInt(coordinates[1]) ]);
+                }
+                
+                $.ajax({
+                    type: 'POST',
+                    url: URL_PATH,
+                    contentType: 'application/json',
+                    data: JSON.stringify({ "img-vector": {"img":list}}),
+                    success: function(data) {
+                        $(".result-text").text(data.response+"");
+                    },
+                    error: function(error){
+                        console.log(error);
+                    }
+                });
+            }
+
+            $(window).on('resize', function(){
+                var containerSize = parseInt($("#digit-container").css("height").slice(0,-2));
+                $("#digit-canvas").attr({"width":containerSize+"px", "height":containerSize+"px"})
+            });
+            
+            $(document).ready(function(){
+                $("body").on("keyup", function(e){
+                            var keycode = (e.keyCode ? e.keyCode : e.which);
+                            if(keycode == '13'){getDigit();}
+                    });
+            });
+            ReactDOM.render(<App />, document.getElementById("root"))
+        </script>
+    </body>
+</html>
+
+<!-- 
+    
+ -->
